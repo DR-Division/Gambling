@@ -2,10 +2,12 @@ package com.division.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +33,17 @@ public class InventoryUtil {
         stack.setDurability(color);
         meta.setDisplayName(name);
         meta.setLore(createLore(lore));
+        stack.setItemMeta(meta);
+        return stack;
+    }
+
+    public static ItemStack createSkullStack(String name, Player target, String... lore){
+        OfflinePlayer p = Bukkit.getOfflinePlayer(target.getUniqueId());
+        ItemStack stack = new ItemStack(Material.SKULL_ITEM,1, (short)3);
+        SkullMeta meta = (SkullMeta) stack.getItemMeta();
+        meta.setDisplayName(name);
+        meta.setLore(createLore(lore));
+        meta.setOwningPlayer(p);
         stack.setItemMeta(meta);
         return stack;
     }

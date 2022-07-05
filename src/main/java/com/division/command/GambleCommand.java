@@ -1,20 +1,20 @@
 package com.division.command;
 
 import com.division.Gamble;
-import com.division.data.CardData;
-import com.division.data.DataManager;
-import com.division.data.GameData;
-import com.division.data.IndianData;
+import com.division.data.*;
+import com.division.file.ConfigManager;
 import com.division.file.GambleLogger;
 import com.division.game.gambles.*;
 import com.division.util.EconomyAPI;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class GambleCommand implements CommandExecutor {
 
@@ -38,14 +38,14 @@ public class GambleCommand implements CommandExecutor {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] arg) {
         if (commandSender instanceof Player) {
             Player p = (Player) commandSender;
-            DenyReason reason = checkPlayer(p); //API 사용부분
+            DenyReason reason = checkPlayer(p);
             if (reason != DenyReason.NONE)
                 sendDenyMessage(p, reason);
             else if (arg.length == 0) {
                 if (p.isOp())
-                    p.sendMessage(header + "§f/도박 <슬롯머신/주사위/블랙잭/룰렛/동전/인디언포커/카드/블랙리스트/저장/리로드>");
+                    p.sendMessage(header + "§f/도박 <슬롯머신/주사위/블랙잭/룰렛/동전/인디언포커/카드/포커/주식/블랙리스트/저장/리로드>");
                 else
-                    p.sendMessage(header + "§f/도박 <슬롯머신/주사위/블랙잭/룰렛/동전/인디언포커/카드>");
+                    p.sendMessage(header + "§f/도박 <슬롯머신/주사위/블랙잭/룰렛/동전/인디언포커/카드/포커/주식>");
                 p.sendMessage(header + "§c게임의 GUI가 닫혀 돈이 증발하는 문제는 개인의 잘못으로 간주하여 복구해드리지 않습니다.");
             }
             else {
@@ -111,23 +111,23 @@ public class GambleCommand implements CommandExecutor {
                             if (arg[1].equalsIgnoreCase("룰") || arg[1].equalsIgnoreCase("베팅")) {
                                 if (arg[1].equalsIgnoreCase("룰")) {
                                     p.sendMessage(" ");
-                                    p.sendMessage(header + ChatColor.WHITE + "/도박 블랙잭 베팅 <금액> 명령어로 블랙잭 게임을 시작합니다.");
-                                    p.sendMessage(header + ChatColor.WHITE + "컴퓨터는 딜러로, 추가적인 베팅을 진행하지 않습니다.");
-                                    p.sendMessage(header + ChatColor.AQUA + "일반 승리시 베팅한 금액 만큼, 블랙잭시 베팅한 금액의 50%를 추가로 받습니다.");
-                                    p.sendMessage(header + ChatColor.GREEN + "기본 룰은 지급 받은 카드의 숫자의 합을 21에 가깝게 유지하면 됩니다.");
-                                    p.sendMessage(header + ChatColor.RED + "Hit 버튼을 우클릭 하게 될경우 베팅액의 100%를 추가로 베팅하며, 한장만 받고 Stay가 됩니다.");
-                                    p.sendMessage(header + ChatColor.DARK_RED + "A는 1 또는 11, Q/J/K는 10으로 취급합니다.");
-                                    p.sendMessage(header + ChatColor.WHITE + "카드는 딜러와 플레이어 둘다 2장씩 지급되며, 원하는 만큼 뽑으실 수 있습니다.");
-                                    p.sendMessage(header + ChatColor.RED + "단, 카드의 숫자합이 21을 넘어가는 순간 패배하게 됩니다. (버스트)");
-                                    p.sendMessage(header + ChatColor.WHITE + "처음 지급받은 2개의 카드의 숫자합이 21이라면 블랙잭 승리가 됩니다.");
-                                    p.sendMessage(header + ChatColor.WHITE + "딜러가 블랙잭 승리일경우 절대 승리할 수 없습니다.");
-                                    p.sendMessage(header + ChatColor.RED + "딜러의 처음 공개된 카드가 A / Q / J / K인경우 insurance(보험)을 들수 있습니다.");
-                                    p.sendMessage(header + ChatColor.WHITE + "보험의 경우 베팅금의 50%를 제거 하는대신 딜러가 블랙잭인 경우");
-                                    p.sendMessage(header + ChatColor.WHITE + "보험 지불액의 2배 (원금)을 받게 됩니다. (딜러 A공개시 활성화)");
-                                    p.sendMessage(header + ChatColor.WHITE + "Insurance가 활성화 되어있을시 당신의 패 (종이)를 클릭해서 거부할 수 있습니다.");
-                                    p.sendMessage(header + ChatColor.WHITE + "그 외의 경우 딜러의 카드 숫자합이 플레이어 보다 높은경우 딜러 승리,");
-                                    p.sendMessage(header + ChatColor.WHITE + "플레이어 보다 낮은경우 플레이어 승리가 되며, 비길경우 베팅한 금액을 그대로 지급합니다.");
-                                    p.sendMessage(header + ChatColor.AQUA + "딜러의 카드는 플레이어의 차례가 끝날때 공개하며, 버스트가 발생할 수도 있습니다.");
+                                    p.sendMessage(header + "§f/도박 블랙잭 베팅 <금액> 명령어로 블랙잭 게임을 시작합니다.");
+                                    p.sendMessage(header + "§f컴퓨터는 딜러로, 추가적인 베팅을 진행하지 않습니다.");
+                                    p.sendMessage(header + "§b일반 승리시 베팅한 금액 만큼, 블랙잭시 베팅한 금액의 50%를 추가로 받습니다.");
+                                    p.sendMessage(header + "§a기본 룰은 지급 받은 카드의 숫자의 합을 21에 가깝게 유지하면 됩니다.");
+                                    p.sendMessage(header + "§cHit 버튼을 우클릭 하게 될경우 베팅액의 100%를 추가로 베팅하며, 한장만 받고 Stay가 됩니다.");
+                                    p.sendMessage(header + "§4A는 1 또는 11, Q/J/K는 10으로 취급합니다.");
+                                    p.sendMessage(header + "§f카드는 딜러와 플레이어 둘다 2장씩 지급되며, 원하는 만큼 뽑으실 수 있습니다.");
+                                    p.sendMessage(header + "§c단, 카드의 숫자합이 21을 넘어가는 순간 패배하게 됩니다. (버스트)");
+                                    p.sendMessage(header + "§f처음 지급받은 2개의 카드의 숫자합이 21이라면 블랙잭 승리가 됩니다.");
+                                    p.sendMessage(header + "§f딜러가 블랙잭 승리일경우 절대 승리할 수 없습니다.");
+                                    p.sendMessage(header + "§c딜러의 처음 공개된 카드가 A / Q / J / K인경우 insurance(보험)을 들수 있습니다.");
+                                    p.sendMessage(header + "§f보험의 경우 베팅금의 50%를 제거 하는대신 딜러가 블랙잭인 경우");
+                                    p.sendMessage(header + "§f보험 지불액의 2배 (원금)을 받게 됩니다. (딜러 A공개시 활성화)");
+                                    p.sendMessage(header + "§fInsurance가 활성화 되어있을시 당신의 패 (종이)를 클릭해서 거부할 수 있습니다.");
+                                    p.sendMessage(header + "§f그 외의 경우 딜러의 카드 숫자합이 플레이어 보다 높은경우 딜러 승리,");
+                                    p.sendMessage(header + "§f플레이어 보다 낮은경우 플레이어 승리가 되며, 비길경우 베팅한 금액을 그대로 지급합니다.");
+                                    p.sendMessage(header + "§b딜러의 카드는 플레이어의 차례가 끝날때 공개하며, 버스트가 발생할 수도 있습니다.");
                                     p.sendMessage(" ");
                                 }
                                 else if (arg[1].equalsIgnoreCase("베팅")) {
@@ -141,10 +141,10 @@ public class GambleCommand implements CommandExecutor {
                                                 p.sendMessage(header + "§c돈이 부족합니다..");
                                             }
                                             else if (value < DataManager.getInstance().getBlackjackMin()) {
-                                                p.sendMessage(header + ChatColor.RED + "최소 베팅금액보다 적습니다. §8[ §6" + DataManager.getInstance().getBlackjackMin() + "§f원 §8]");
+                                                p.sendMessage(header + "§c최소 베팅금액보다 적습니다. §8[ §6" + DataManager.getInstance().getBlackjackMin() + "§f원 §8]");
                                             }
                                             else if (value > DataManager.getInstance().getBlackjackMax()) {
-                                                p.sendMessage(header + ChatColor.RED + "최대 베팅금액보다 많습니다. §8[ §6" + DataManager.getInstance().getBlackjackMax() + "§f원 §8]");
+                                                p.sendMessage(header + "§c최대 베팅금액보다 많습니다. §8[ §6" + DataManager.getInstance().getBlackjackMax() + "§f원 §8]");
                                             }
                                             else {
                                                 EconomyAPI.getInstance().steelMoney(p, value);
@@ -166,16 +166,16 @@ public class GambleCommand implements CommandExecutor {
                             if (arg[1].equalsIgnoreCase("설명") || arg[1].equalsIgnoreCase("베팅")) {
                                 if (arg[1].equalsIgnoreCase("설명")) {
                                     p.sendMessage(" ");
-                                    p.sendMessage(header + ChatColor.AQUA + "/도박 룰렛 베팅 <금액> 명령어로 베팅 후 게임을 시작합니다.");
-                                    p.sendMessage(header + ChatColor.WHITE + "가운데에 위치한 버튼을 누를 시 룰렛이 돌아갑니다.");
-                                    p.sendMessage(header + ChatColor.WHITE + "3개는 꽝, 나머지 3개는 배율이 적혀있습니다.");
-                                    p.sendMessage(header + ChatColor.RED + "룰렛이 멈췄을때 붉게 표시된 부분의 보상을 흭득합니다.");
-                                    p.sendMessage(header + ChatColor.DARK_RED + "배율이 적힌 부분에 멈췄을때, 베팅액 x 배율의 금액을 흭득합니다!");
+                                    p.sendMessage(header + "§b/도박 룰렛 베팅 <금액> 명령어로 베팅 후 게임을 시작합니다.");
+                                    p.sendMessage(header + "§f가운데에 위치한 버튼을 누를 시 룰렛이 돌아갑니다.");
+                                    p.sendMessage(header + "§b3개는 꽝, 나머지 3개는 배율이 적혀있습니다.");
+                                    p.sendMessage(header + "§c룰렛이 멈췄을때 붉게 표시된 부분의 보상을 흭득합니다.");
+                                    p.sendMessage(header + "§4배율이 적힌 부분에 멈췄을때, 베팅액 x 배율의 금액을 흭득합니다!");
                                     p.sendMessage(" ");
                                 }
                                 else {
                                     if (arg.length == 2) {
-                                        p.sendMessage(header + ChatColor.WHITE + "베팅 금액을 적어주세요. ");
+                                        p.sendMessage(header + "§f베팅 금액을 적어주세요. ");
                                     }
                                     else {
                                         if (checkIntParameter(arg[2])) {
@@ -184,10 +184,10 @@ public class GambleCommand implements CommandExecutor {
                                                 p.sendMessage(header + "§c돈이 부족합니다..");
                                             }
                                             else if (value < DataManager.getInstance().getRouletteMin()) {
-                                                p.sendMessage(header + ChatColor.RED + "최소 베팅금액보다 적습니다. §8[ §6" + DataManager.getInstance().getRouletteMin() + "§f원 §8]");
+                                                p.sendMessage(header + "§c최소 베팅금액보다 적습니다. §8[ §6" + DataManager.getInstance().getRouletteMin() + "§f원 §8]");
                                             }
                                             else if (value > DataManager.getInstance().getRouletteMax()) {
-                                                p.sendMessage(header + ChatColor.RED + "최대 베팅금액보다 많습니다. §8[ §6" + DataManager.getInstance().getRouletteMax() + "§f원 §8]");
+                                                p.sendMessage(header + "§c최대 베팅금액보다 많습니다. §8[ §6" + DataManager.getInstance().getRouletteMax() + "§f원 §8]");
                                             }
                                             else {
                                                 EconomyAPI.getInstance().steelMoney(p, value);
@@ -266,11 +266,11 @@ public class GambleCommand implements CommandExecutor {
                             else if (arg[1].equalsIgnoreCase("거부")) {
                                 if (IndianData.getInstance().findPlayer(p.getUniqueId()) != IndianData.RequestType.NONE) {
                                     IndianData.getInstance().remove(p.getUniqueId());
-                                    p.sendMessage(header + ChatColor.RED + "모든 요청을 제거하였습니다.");
+                                    p.sendMessage(header + "§c모든 요청을 제거하였습니다.");
                                     GambleLogger.getInstance().addLog(p.getName() + "님이 인디언포커 요청 거부");
                                 }
                                 else
-                                    p.sendMessage(header + ChatColor.RED + "현재 들어온 요청이 없습니다.");
+                                    p.sendMessage(header + "§c현재 들어온 요청이 없습니다.");
                             }
                             else {
                                 if (arg.length == 4) {
@@ -334,7 +334,7 @@ public class GambleCommand implements CommandExecutor {
                                 CardData.ResponseType type = CardData.getInstance().findPlayer(p.getUniqueId());
                                 switch (type) {
                                     case REQUESTER:
-                                        p.sendMessage(header + ChatColor.AQUA + "이미 다른사람에게 요청중인 게임이 존재합니다.");
+                                        p.sendMessage(header + "§b이미 다른사람에게 요청중인 게임이 존재합니다.");
                                         break;
                                     case TARGET:
                                         Player target = Bukkit.getPlayer(CardData.getInstance().getTarget(p.getUniqueId()));
@@ -347,7 +347,7 @@ public class GambleCommand implements CommandExecutor {
                                             CardData.getInstance().remove(p.getUniqueId());
                                         }
                                         else if (EconomyAPI.getInstance().getMoney(p) < CardData.getInstance().getMoney(target.getUniqueId()) || EconomyAPI.getInstance().getMoney(target) < CardData.getInstance().getMoney(target.getUniqueId())) {
-                                            p.sendMessage(header + ChatColor.RED + "해당 플레이어 혹은 당신의 돈이 모자라므로 요청이 삭제됩니다.");
+                                            p.sendMessage(header + "§c해당 플레이어 혹은 당신의 돈이 모자라므로 요청이 삭제됩니다.");
                                             CardData.getInstance().remove(p.getUniqueId());
                                         }
                                         else {
@@ -363,525 +363,305 @@ public class GambleCommand implements CommandExecutor {
                                 }
 
 
-                        }
-                        else if (arg[1].equalsIgnoreCase("거부")) {
-                            if (CardData.getInstance().findPlayer(p.getUniqueId()) != CardData.ResponseType.NONE) {
-                                CardData.getInstance().remove(p.getUniqueId());
-                                p.sendMessage(header + "§c모든 요청을 제거하였습니다.");
-                                GambleLogger.getInstance().addLog(p.getName() + "님이 카드도박 요청 취소");
                             }
-                            else
-                                p.sendMessage(header + ChatColor.RED + "현재 들어온 요청이 없습니다.");
-                        }
-                        else {
-                            if (arg.length == 4) {
-                                if (checkIntParameter(arg[3])) {
-                                    int value = Integer.parseInt(arg[3]);
-                                    if (value < DataManager.getInstance().getCardMin())
-                                        p.sendMessage(header + "§c최소금액보다 적습니다.. §7[ §f" + DataManager.getInstance().getCardMin() + " §7]");
-                                    else if (value > DataManager.getInstance().getCardMax())
-                                        p.sendMessage(header + "§c최대금액보다 많습니다.. §7[ §f" + DataManager.getInstance().getCardMax() + " §7]");
-                                    else {
-                                        Player target = Bukkit.getServer().getPlayer(arg[2]);
-                                        if (target == null || p.getName().equalsIgnoreCase(target.getName()))
-                                            p.sendMessage(header + ChatColor.DARK_RED + "해당 플레이어는 온라인이 아닙니다..");
+                            else if (arg[1].equalsIgnoreCase("거부")) {
+                                if (CardData.getInstance().findPlayer(p.getUniqueId()) != CardData.ResponseType.NONE) {
+                                    CardData.getInstance().remove(p.getUniqueId());
+                                    p.sendMessage(header + "§c모든 요청을 제거하였습니다.");
+                                    GambleLogger.getInstance().addLog(p.getName() + "님이 카드도박 요청 취소");
+                                }
+                                else
+                                    p.sendMessage(header + "§c현재 들어온 요청이 없습니다.");
+                            }
+                            else {
+                                if (arg.length == 4) {
+                                    if (checkIntParameter(arg[3])) {
+                                        int value = Integer.parseInt(arg[3]);
+                                        if (value < DataManager.getInstance().getCardMin())
+                                            p.sendMessage(header + "§c최소금액보다 적습니다.. §7[ §f" + DataManager.getInstance().getCardMin() + " §7]");
+                                        else if (value > DataManager.getInstance().getCardMax())
+                                            p.sendMessage(header + "§c최대금액보다 많습니다.. §7[ §f" + DataManager.getInstance().getCardMax() + " §7]");
                                         else {
-                                            if (checkPlayer(target) != DenyReason.NONE) {
-                                                p.sendMessage(header + ChatColor.RED + "대상 플레이어가 게임에 참여할 수 있는 상태가 아닙니다.");
-                                            }
-                                            else if (EconomyAPI.getInstance().getMoney(p) < value || EconomyAPI.getInstance().getMoney(target) < value)
-                                                p.sendMessage(header + ChatColor.RED + "대상 플레이어나 플레이어가 최대 금액을 보유하고 있지 않습니다.");
+                                            Player target = Bukkit.getServer().getPlayer(arg[2]);
+                                            if (target == null || p.getName().equalsIgnoreCase(target.getName()))
+                                                p.sendMessage(header + "§4해당 플레이어는 온라인이 아닙니다..");
                                             else {
-                                                if (CardData.getInstance().findPlayer(p.getUniqueId()) != CardData.ResponseType.NONE || CardData.getInstance().findPlayer(target.getUniqueId()) != CardData.ResponseType.NONE)
-                                                    p.sendMessage(header + ChatColor.RED + "이미 게임을 요청한 사람이 존재합니다.");
+                                                if (checkPlayer(target) != DenyReason.NONE) {
+                                                    p.sendMessage(header + "§c대상 플레이어가 게임에 참여할 수 있는 상태가 아닙니다.");
+                                                }
+                                                else if (EconomyAPI.getInstance().getMoney(p) < value || EconomyAPI.getInstance().getMoney(target) < value)
+                                                    p.sendMessage(header + "§c대상 플레이어나 플레이어가 최대 금액을 보유하고 있지 않습니다.");
                                                 else {
-                                                    CardData.getInstance().addValue(p.getUniqueId(), target.getUniqueId(), value);
-                                                    p.sendMessage(header + "§b" + target.getName() + "§f님에게 §c카드 도박§f요청을 넣었습니다.");
-                                                    target.sendMessage(header + "§b" + p.getName() + "§f님이 당신에게 카드 도박을 요청하였습니다. §7[ §6" + value + "§f원 §7]");
-                                                    target.sendMessage(header + "§b수락을 원하시면 /도박 카드 수락, §b거절을 원하시면 /도박 카드 거부");
-                                                    GambleLogger.getInstance().addLog(p.getName() + "님이 " + target.getName() + "에게 카드도박 요청");
+                                                    if (CardData.getInstance().findPlayer(p.getUniqueId()) != CardData.ResponseType.NONE || CardData.getInstance().findPlayer(target.getUniqueId()) != CardData.ResponseType.NONE)
+                                                        p.sendMessage(header + "§c이미 게임을 요청한 사람이 존재합니다.");
+                                                    else {
+                                                        CardData.getInstance().addValue(p.getUniqueId(), target.getUniqueId(), value);
+                                                        p.sendMessage(header + "§b" + target.getName() + "§f님에게 §c카드 도박 §f요청을 넣었습니다.");
+                                                        target.sendMessage(header + "§b" + p.getName() + "§f님이 당신에게 카드 도박을 요청하였습니다. §7[ §6" + value + "§f원 §7]");
+                                                        target.sendMessage(header + "§b수락을 원하시면 /도박 카드 수락, §b거절을 원하시면 /도박 카드 거부");
+                                                        GambleLogger.getInstance().addLog(p.getName() + "님이 " + target.getName() + "에게 카드도박 요청");
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+                                    else
+                                        p.sendMessage(header + "§4숫자만 입력하세요..");
                                 }
                                 else
-                                    p.sendMessage(header + "§4숫자만 입력하세요..");
-                            }
-                            else
-                                p.sendMessage(header + "§f/도박 카드 시작 <대상> <최대금액>");
+                                    p.sendMessage(header + "§f/도박 카드 시작 <대상> <최대금액>");
 
+                            }
                         }
                     }
-                }
-                    /*else if (arg[0].equalsIgnoreCase("블랙리스트")) {
+                    else if (arg[0].equalsIgnoreCase("포커")) {
+                        if (arg.length == 1) {
+                            p.sendMessage(header + "§f/도박 포커 <설명/수락/거부/시작/족보> <대상> <금액>");
+                        }
+                        else if (arg.length == 2 && arg[1].equalsIgnoreCase("설명") || arg[1].equalsIgnoreCase("시작") || arg[1].equalsIgnoreCase("수락") || arg[1].equalsIgnoreCase("거부") || arg[1].equalsIgnoreCase("족보")) {
+                            if (arg[1].equalsIgnoreCase("설명")) {
+                                p.sendMessage(" ");
+                                p.sendMessage(header + "§b/도박 포커 시작 <대상> <최대금액> 명령어로 대상에게 1대1 포커 요청을 합니다.");
+                                p.sendMessage(header + "§f게임 시작후 카드 5장을 받게 되며 해당 카드마다 바꿀 수 있는 기회가 한번씩 주어집니다.");
+                                p.sendMessage(header + "§f카드 도박과 마찬가지로 추가 베팅이 존재하지 않으며, 승자는 모든 베팅금을 가져갑니다.");
+                                p.sendMessage(header + "§c규칙은 포커 족보대로 진행되며, 족보가 같은경우 카드간의 우열과 관계없이 무승부로 끝납니다.");
+                                p.sendMessage(header + "§fGUI내에서 상대방 머리 옆에 블럭을 통해 상대방의 차례가 끝났는지 확인할 수 있습니다.");
+                                p.sendMessage(header + "§f자세한건 /도박 포커 족보 명령어를 통해 확인할 수 있습니다.");
+                                p.sendMessage(" ");
+                            }
+                            else if (arg[1].equalsIgnoreCase("수락")) {
+                                PokerData.Result type = PokerData.getInstance().findPlayer(p.getUniqueId());
+                                switch (type) {
+                                    case REQUESTER:
+                                        p.sendMessage(header + "§b이미 다른사람에게 요청중인 게임이 존재합니다.");
+                                        break;
+                                    case TARGET:
+                                        Player target = Bukkit.getPlayer(PokerData.getInstance().getTarget(p.getUniqueId()));
+                                        if (target == null) {
+                                            p.sendMessage(header + "§c해당 플레이어가 온라인이 아니므로 요청을 삭제합니다.");
+                                            PokerData.getInstance().remove(p.getUniqueId());
+                                        }
+                                        else if (checkPlayer(target) != DenyReason.NONE) {
+                                            p.sendMessage(header + "§c대상 플레이어가 게임에 참여할 수 있는 상태가 아닙니다.");
+                                            PokerData.getInstance().remove(p.getUniqueId());
+                                        }
+                                        else if (EconomyAPI.getInstance().getMoney(p) < PokerData.getInstance().getMoney(target.getUniqueId()) || EconomyAPI.getInstance().getMoney(target) < PokerData.getInstance().getMoney(target.getUniqueId())) {
+                                            p.sendMessage(header + "§c해당 플레이어 혹은 당신의 돈이 모자라므로 요청이 삭제됩니다.");
+                                            PokerData.getInstance().remove(p.getUniqueId());
+                                        }
+                                        else {
+                                            EconomyAPI.getInstance().steelMoney(p, PokerData.getInstance().getMoney(target.getUniqueId()));
+                                            EconomyAPI.getInstance().steelMoney(target, PokerData.getInstance().getMoney(target.getUniqueId()));
+                                            new Poker(target.getUniqueId(), p.getUniqueId(), Plugin, PokerData.getInstance().getMoney(target.getUniqueId()));
+                                            GambleLogger.getInstance().addLog(p.getName() + "님이 " + target.getName() + "님의 포커 요청 수락");
+                                        }
+                                        break;
+                                    case NONE:
+                                        p.sendMessage(header + "§c현재 들어온 요청이 없습니다.");
+                                        break;
+                                }
+
+
+                            }
+                            else if (arg[1].equalsIgnoreCase("거부")) {
+                                if (PokerData.getInstance().findPlayer(p.getUniqueId()) != PokerData.Result.NONE) {
+                                    PokerData.getInstance().remove(p.getUniqueId());
+                                    p.sendMessage(header + "§c모든 요청을 제거하였습니다.");
+                                    GambleLogger.getInstance().addLog(p.getName() + "님이 포커 요청 취소");
+                                }
+                                else
+                                    p.sendMessage(header + "§c현재 들어온 요청이 없습니다.");
+                            }
+                            else if (arg[1].equalsIgnoreCase("족보")) {
+                                p.sendMessage(" ");
+                                p.sendMessage(header + "§4로얄 스트레이트 플러쉬 §7- §f같은 무늬 + 10, J, Q, K, A");
+                                p.sendMessage(header + "§b백 스트레이트 플러쉬 §7- §f같은 무늬 + A, 2, 3, 4, 5");
+                                p.sendMessage(header + "§a스트레이트 플러쉬 §7- §f같은 무늬 + 연속적인 값");
+                                p.sendMessage(header + "§c포카드 §7- §f같은 값 4장");
+                                p.sendMessage(header + "§b플러쉬 §7- §f전부다 같은 무늬");
+                                p.sendMessage(header + "§b풀하우스 §7- §f같은 값 3장 + 같은 값 2장 (트리플 + 투페어)");
+                                p.sendMessage(header + "§c마운틴 §7- §f10, J, Q, K, A");
+                                p.sendMessage(header + "§b백 스트레이트 §7- §fA, 2, 3, 4, 5");
+                                p.sendMessage(header + "§a트리플 §7- §f같은 값 3장");
+                                p.sendMessage(header + "§c투페어 §7- §f같은 값 2장 + 같은 값 2장");
+                                p.sendMessage(header + "§b원페어 §7- §f같은 값 2장");
+                                p.sendMessage(header + "§4탑 §7- §f꽝");
+                                p.sendMessage(" ");
+                            }
+                            else {
+                                if (arg.length == 4) {
+                                    if (checkIntParameter(arg[3])) {
+                                        int value = Integer.parseInt(arg[3]);
+                                        if (value < DataManager.getInstance().getPokerMin())
+                                            p.sendMessage(header + "§c최소금액보다 적습니다.. §7[ §f" + DataManager.getInstance().getPokerMin() + " §7]");
+                                        else if (value > DataManager.getInstance().getPokerMax())
+                                            p.sendMessage(header + "§c최대금액보다 많습니다.. §7[ §f" + DataManager.getInstance().getPokerMax() + " §7]");
+                                        else {
+                                            Player target = Bukkit.getServer().getPlayer(arg[2]);
+                                            if (target == null || p.getName().equalsIgnoreCase(target.getName()))
+                                                p.sendMessage(header + "§4해당 플레이어는 온라인이 아닙니다..");
+                                            else {
+                                                if (checkPlayer(target) != DenyReason.NONE) {
+                                                    p.sendMessage(header + "§c대상 플레이어가 게임에 참여할 수 있는 상태가 아닙니다.");
+                                                }
+                                                else if (EconomyAPI.getInstance().getMoney(p) < value || EconomyAPI.getInstance().getMoney(target) < value)
+                                                    p.sendMessage(header + "§c대상 플레이어나 플레이어가 최대 금액을 보유하고 있지 않습니다.");
+                                                else {
+                                                    if (PokerData.getInstance().findPlayer(p.getUniqueId()) != PokerData.Result.NONE || PokerData.getInstance().findPlayer(target.getUniqueId()) != PokerData.Result.NONE)
+                                                        p.sendMessage(header + "§c이미 게임을 요청한 사람이 존재합니다.");
+                                                    else {
+                                                        PokerData.getInstance().addValue(p.getUniqueId(), target.getUniqueId(), value);
+                                                        p.sendMessage(header + "§b" + target.getName() + "§f님에게 §c포커 §f요청을 넣었습니다.");
+                                                        target.sendMessage(header + "§b" + p.getName() + "§f님이 당신에게 포커를 요청하였습니다. §7[ §6" + value + "§f원 §7]");
+                                                        target.sendMessage(header + "§b수락을 원하시면 /도박 포커 수락, §b거절을 원하시면 /도박 포커 거부");
+                                                        GambleLogger.getInstance().addLog(p.getName() + "님이 " + target.getName() + "에게 포커 요청");
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                        p.sendMessage(header + "§4숫자만 입력하세요..");
+                                }
+                                else
+                                    p.sendMessage(header + "§f/도박 카드 시작 <대상> <최대금액>");
+
+                            }
+                        }
+                    }
+                    else if (arg[0].equalsIgnoreCase("주식")) {
+                        if (arg.length >= 2 && p.isOp() && (arg[1].equalsIgnoreCase("추가") || arg[1].equalsIgnoreCase("삭제"))) {
+                            if (arg[1].equalsIgnoreCase("추가")) {
+                                if (arg.length == 5) {
+                                    if (checkIntParameter(arg[3]) && checkIntParameter(arg[4])) {
+                                        int money = Integer.parseInt(arg[3]);
+                                        int width = Integer.parseInt(arg[4]);
+                                        if (width <= 0 || money <= 0)
+                                            p.sendMessage(header + "§f0이하의 값이 올 수 없습니다.");
+                                        else if (StockManager.getInstance().getStockMap().size() == 45)
+                                            p.sendMessage(header + "§f주식이 너무 많습니다.");
+                                        else if (arg[2].contains("."))
+                                            p.sendMessage(header + "§f주식이름에는 .이 올 수 없습니다.");
+                                        else {
+                                            StockManager.getInstance().addStock(arg[2], money, width);
+                                            Bukkit.broadcastMessage(header + "§f새로운 주식이 상장되었습니다.");
+                                        }
+                                    }
+                                    else
+                                        p.sendMessage(header + "§c숫자만 입력해 주세요.");
+                                }
+                                else
+                                    p.sendMessage(header + "§f/도박 주식 추가 <이름> <가격> <변동폭>");
+                            }
+                            else {
+                                if (arg.length == 3) {
+                                    if (StockManager.getInstance().isExist(arg[2])) {
+                                        StockManager.getInstance().removeStock(arg[2]);
+                                        p.sendMessage(header + "§f해당 주식이 제거되었습니다.");
+                                    }
+                                    else
+                                        p.sendMessage(header + "§f존재하지 않는 주식입니다.");
+                                }
+                                else
+                                    p.sendMessage(header + "§f/도박 주식 삭제 <이름>");
+                            }
+                        }
+                        else if (p.isOp() && arg.length != 1)
+                            p.sendMessage(header + "§f/도박 주식 <추가/삭제>");
+                        else {
+                            new Stock(p.getUniqueId());
+                        }
+                    }
+                    else if (arg[0].equalsIgnoreCase("블랙리스트")) {
                         if (p.isOp()) {
                             if (arg.length == 1) {
-                                p.sendMessage(ChatColor.WHITE + "======================================================================");
-                                p.sendMessage(" ");
-                                p.sendMessage(header + ChatColor.WHITE + "/도박 블랙리스트 추가 <닉네임> " + ChatColor.GRAY + ": " + ChatColor.WHITE + "해당 플레이어를 블랙리스트에 추가합니다.");
-                                p.sendMessage(header + ChatColor.WHITE + "/도박 블랙리스트 삭제 <번호> " + ChatColor.GRAY + ": " + ChatColor.WHITE + "해당 플레이어를 블랙리스트에서 삭제합니다.");
-                                p.sendMessage(header + ChatColor.WHITE + "/도박 블랙리스트 목록 " + ChatColor.GRAY + ": " + ChatColor.WHITE + "블랙리스트 목록을 확인합니다.");
-                                p.sendMessage(header + ChatColor.WHITE + "/도박 블랙리스트 초기화 " + ChatColor.GRAY + ": " + ChatColor.WHITE + "블랙리스트 목록을 초기화 합니다.");
-                                p.sendMessage(" ");
-                                p.sendMessage(ChatColor.WHITE + "======================================================================");
+                                p.sendMessage(header + "§f/도박 블랙리스트 <추가/삭제/목록/초기화>");
                             }
                             else if (arg[1].equalsIgnoreCase("추가") || arg[1].equalsIgnoreCase("삭제") || arg[1].equalsIgnoreCase("목록") || arg[1].equalsIgnoreCase("초기화")) {
                                 if (arg[1].equalsIgnoreCase("추가")) {
                                     if (arg.length == 2) {
-                                        p.sendMessage(header + ChatColor.AQUA + "/도박 블랙리스트 추가 <닉네임>");
+                                        p.sendMessage(header + "§b/도박 블랙리스트 추가 <닉네임>");
                                     }
                                     else {
                                         Player target = Bukkit.getServer().getPlayer(arg[2]);
                                         if (target == null) {
-                                            p.sendTitle(header, ChatColor.RED + "온라인 플레이어만 블랙리스트에 추가 할 수 있습니다..", 5, 50, 5);
+                                            p.sendTitle(header, "§c온라인 플레이어만 블랙리스트에 추가 할 수 있습니다..", 5, 50, 5);
                                         }
                                         else {
-                                            Blacklist.addplayer(target);
-                                            Logger.addlog(p.getName() + "님이 " + target.getName() + "님을 블랙리스트에 등재시킴.");
-                                            p.sendTitle(header, ChatColor.WHITE + "플레이어 " + ChatColor.AQUA + target.getName() + ChatColor.WHITE + "를 " + ChatColor.GRAY + "블랙리스트" + ChatColor.WHITE + "에 추가 하였습니다.", 5, 50, 5);
+                                            DataManager.getInstance().addBlackList(target.getUniqueId());
+                                            GambleLogger.getInstance().addLog(p.getName() + "님이 " + target.getName() + "님을 블랙리스트에 등재시킴.");
+                                            p.sendTitle(header, "§f플레이어 §b" + target.getName() + "§f를 §7블랙리스트§f에 추가 하였습니다.", 5, 50, 5);
                                             p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 3f, 1f);
                                         }
                                     }
                                 }
                                 else if (arg[1].equalsIgnoreCase("삭제")) {
                                     if (arg.length == 2) {
-                                        p.sendMessage(header + ChatColor.AQUA + "/도박 블랙리스트 삭제 <번호>");
+                                        p.sendMessage(header + "§b/도박 블랙리스트 삭제 <번호>");
                                     }
-                                    else {
-                                        try {
-                                            int input = Integer.parseInt(arg[2]) - 1;
-                                            if (Blacklist.isindexout(input)) {
-                                                p.sendMessage(header + ChatColor.RED + "인덱스 범위를 벗어났습니다..");
-                                            }
-                                            else {
-                                                Blacklist.removeindex(input);
-                                                Logger.addlog(p.getName() + " 님이 블랙리스트의 " + (input + 1) + "번째 인덱스를 삭제함.");
-                                                p.sendTitle(header, ChatColor.WHITE + "해당 " + ChatColor.AQUA + "플레이어" + ChatColor.WHITE + "를 " + ChatColor.GRAY + "블랙리스트" + ChatColor.WHITE + "에서 " + ChatColor.RED + "삭제 " + ChatColor.WHITE + "하였습니다.", 5, 50, 5);
-                                            }
-                                        }
-                                        catch (NumberFormatException e) {
-                                            p.sendMessage(header + ChatColor.RED + "숫자만 입력해주세요!");
+                                    else if (checkIntParameter(arg[2])) {
+                                        int input = Integer.parseInt(arg[2]) - 1;
+                                        if (DataManager.getInstance().getBlacklist().size() <= input)
+                                            p.sendMessage(header + "§c인덱스 범위를 벗어났습니다.");
+                                        else {
+                                            DataManager.getInstance().getBlacklist().remove(input);
+                                            GambleLogger.getInstance().addLog(p.getName() + "님이 블랙리스트의 " + (input + 1) + "번째 인덱스를 삭제함.");
+                                            p.sendTitle(header, "§f해당 §b플레이어§f를 §7블랙리스트§f에서 §f삭제하였습니다.", 5, 50, 5);
                                         }
                                     }
                                 }
                                 else if (arg[1].equalsIgnoreCase("목록")) {
-                                    if (Blacklist.isindexout(0)) {
-                                        p.sendMessage(header + ChatColor.RED + "현재 블랙리스트 목록이 구성되어 있지 않습니다.");
-                                    }
+                                    if (DataManager.getInstance().getBlacklist().size() == 0)
+                                        p.sendMessage(header + "§c현재 블랙리스트 목록이 구성되어 있지 않습니다.");
                                     else {
-                                        int i, size;
-                                        size = Gamble.blacklist.size();
-                                        p.sendMessage(ChatColor.WHITE + "======================================================================");
+                                        int i = 1;
                                         p.sendMessage(" ");
-                                        for (i = 0; i < size; i++) {
-                                            p.sendMessage(ChatColor.DARK_GRAY + "[ " + ChatColor.WHITE + (i + 1) + ChatColor.DARK_GRAY + " ] " + ChatColor.AQUA + Gamble.blacklist.get(i) + " " + ChatColor.GRAY + "[ " + ChatColor.GOLD + Blacklist.getplayer(i) + ChatColor.GRAY + " ]");
+                                        for (UUID data : DataManager.getInstance().getBlacklist()) {
+                                            Player target = Bukkit.getPlayer(data);
+                                            p.sendMessage(" §f" + i++ + ". §b" + data + " §7- §c" + (target == null ? "Offline" : target.getName()));
                                         }
                                         p.sendMessage(" ");
-                                        p.sendMessage(ChatColor.WHITE + "======================================================================");
                                     }
                                 }
                                 else if (arg[1].equalsIgnoreCase("초기화")) {
-                                    Blacklist.clear();
-                                    p.sendTitle(header, ChatColor.DARK_RED + "도박 블랙리스트가 초기화 되었습니다!", 5, 50, 5);
-                                    Logger.addlog(p.getName() + " 님이 블랙리스트를 초기화 함.");
+                                    DataManager.getInstance().getBlacklist().clear();
+                                    p.sendTitle(header, "§4도박 블랙리스트가 초기화 되었습니다!", 5, 50, 5);
+                                    GambleLogger.getInstance().addLog(p.getName() + "님이 블랙리스트를 초기화 함.");
                                 }
                             }
-                            else {
-                                p.sendMessage(ChatColor.WHITE + "======================================================================");
-                                p.sendMessage(" ");
-                                p.sendMessage(header + ChatColor.WHITE + "/도박 블랙리스트 추가 <닉네임> " + ChatColor.GRAY + ": " + ChatColor.WHITE + "해당 플레이어를 블랙리스트에 추가합니다.");
-                                p.sendMessage(header + ChatColor.WHITE + "/도박 블랙리스트 삭제 <인덱스> " + ChatColor.GRAY + ": " + ChatColor.WHITE + "해당 플레이어를 블랙리스트에서 삭제합니다.");
-                                p.sendMessage(header + ChatColor.WHITE + "/도박 블랙리스트 목록 " + ChatColor.GRAY + ": " + ChatColor.WHITE + "블랙리스트 목록을 확인합니다.");
-                                p.sendMessage(header + ChatColor.WHITE + "/도박 블랙리스트 초기화 " + ChatColor.GRAY + ": " + ChatColor.WHITE + "블랙리스트 목록을 초기화 합니다.");
-                                p.sendMessage(" ");
-                                p.sendMessage(ChatColor.WHITE + "======================================================================");
-                            }
                         }
-                        else {
-                            p.sendMessage(header + ChatColor.DARK_RED + "접근권한이 없습니다.");
-                        }
-                    }
+                        else
+                            p.sendMessage(header + "§c접근권한이 없습니다.");
 
-
-                        else {
-                            p.sendMessage(ChatColor.WHITE + "======================================================================");
-                            p.sendMessage(" ");
-                            p.sendMessage(header + ChatColor.WHITE + "/도박 카드 설명 " + ChatColor.GRAY + ": " + ChatColor.WHITE + "카드 도박에 대한 설명을 듣습니다.");
-                            p.sendMessage(header + ChatColor.WHITE + "/도박 카드 수락 " + ChatColor.GRAY + ": " + ChatColor.WHITE + "자신에게 들어온 카드 도박을 수락합니다.");
-                            p.sendMessage(header + ChatColor.WHITE + "/도박 카드 취소 " + ChatColor.GRAY + ": " + ChatColor.WHITE + "자신이 요청한 카드 도박이나 자신에게 요청된 카드 도박을 거절합니다.");
-                            p.sendMessage(header + ChatColor.WHITE + "/도박 카드 시작 <대상> <최대금액> " + ChatColor.GRAY + ": " + ChatColor.WHITE + "해당 플레이어에게 카드 도박을 요청합니다.");
-                            p.sendMessage(" ");
-                            p.sendMessage(ChatColor.WHITE + "======================================================================");
-                        }
                     }
-                    else {
+                    else if (arg[0].equalsIgnoreCase("저장")) {
                         if (p.isOp()) {
-                            if (arg.length == 1) {
-                                p.sendMessage(ChatColor.WHITE + "======================================================================");
-                                p.sendMessage(" ");
-                                p.sendMessage(header + ChatColor.WHITE + "/도박 금액 <최대/최소> <슬롯머신/주사위/블랙잭/룰렛/동전/인디언포커/카드> <금액> " + ChatColor.GRAY + ": " + ChatColor.WHITE + "해당 도박의 최대/최소 금액을 지정합니다.");
-                                p.sendMessage(header + ChatColor.AQUA + "슬롯머신은 최소 금액 (1회당 사용금액)만 지정 가능합니다.");
-                                p.sendMessage(header + ChatColor.RED + "/도박 금액 누적금액 <금액> " + ChatColor.GRAY + ": " + ChatColor.WHITE + "슬롯머신에 누적된 금액을 지정합니다.");
-                                p.sendMessage(" ");
-                                p.sendMessage(ChatColor.WHITE + "======================================================================");
-                            }
-                            else {
-                                if (arg[1].equalsIgnoreCase("최대") || arg[1].equalsIgnoreCase("최소") || arg[1].equalsIgnoreCase("누적금액")) {
-                                    if (arg[1].equalsIgnoreCase("최대")) {
-                                        if (arg.length == 2) {
-                                            p.sendMessage(header + ChatColor.AQUA + "/도박 금액 <최대> <주사위/블랙잭/룰렛> <금액>");
-                                        }
-                                        else {
-                                            if (arg[2].equalsIgnoreCase("슬롯머신")) {
-                                                p.sendMessage(header + ChatColor.RED + "슬롯머신은 최대 금액을 지정할 수 없습니다.");
-                                            }
-                                            else if (arg[2].equalsIgnoreCase("동전")) {
-                                                p.sendMessage(header + ChatColor.RED + "동전 도박은 최대 금액을 지정할 수 없습니다.");
-                                            }
-                                            else if (arg[2].equalsIgnoreCase("주사위") || arg[2].equalsIgnoreCase("블랙잭") || arg[2].equalsIgnoreCase("룰렛") || arg[2].equalsIgnoreCase("인디언포커") || arg[2].equalsIgnoreCase("카드")) {
-                                                if (arg[2].equalsIgnoreCase("주사위")) {
-                                                    if (arg.length == 3) {
-                                                        p.sendMessage(header + ChatColor.AQUA + "금액을 입력해주세요. " + ChatColor.RED + "현재금액 " + ChatColor.GRAY + ": " + ChatColor.GOLD + Gamble.dicemaximum + " 원");
-                                                    }
-                                                    else {
-                                                        try {
-                                                            int a = Integer.parseInt(arg[3]);
-                                                            if (a <= 0) {
-                                                                p.sendMessage(header + ChatColor.RED + "값이 이상합니다..");
-                                                            }
-                                                            else if (a < Gamble.diceminimum) {
-                                                                p.sendMessage(header + ChatColor.RED + "최소금액 보다 적은값을 입력하셨습니다.");
-                                                            }
-                                                            else {
-                                                                Gamble.dicemaximum = a;
-                                                                p.sendTitle(header, ChatColor.AQUA + "주사위 도박" + ChatColor.WHITE + "의 " + ChatColor.RED + "최대 금액" + ChatColor.WHITE + "이 " + ChatColor.GOLD + a + ChatColor.WHITE + " 원 으로 지정되었습니다.", 5, 50, 5);
-                                                                p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2.0f, 1.0f);
-                                                            }
-                                                        }
-                                                        catch (NumberFormatException e) {
-                                                            p.sendMessage(header + ChatColor.DARK_RED + "숫자만 입력해주세요..");
-                                                        }
-                                                    }
-                                                }
-                                                else if (arg[2].equalsIgnoreCase("블랙잭")) {
-                                                    if (arg.length == 3) {
-                                                        p.sendMessage(header + ChatColor.AQUA + "금액을 입력해주세요. " + ChatColor.RED + "현재금액 " + ChatColor.GRAY + ": " + ChatColor.GOLD + Gamble.blackmaximum + " 원");
-                                                    }
-                                                    else {
-                                                        try {
-                                                            int a = Integer.parseInt(arg[3]);
-                                                            if (a <= 0) {
-                                                                p.sendMessage(header + ChatColor.RED + "값이 이상합니다..");
-                                                            }
-                                                            else if (a < Gamble.blackminimum) {
-                                                                p.sendMessage(header + ChatColor.RED + "최소금액 보다 적은값을 입력하셨습니다.");
-                                                            }
-                                                            else {
-                                                                Gamble.blackmaximum = a;
-                                                                p.sendTitle(header, ChatColor.AQUA + "블랙잭" + ChatColor.WHITE + "의 " + ChatColor.RED + "최대 금액" + ChatColor.WHITE + "이 " + ChatColor.GOLD + a + ChatColor.WHITE + " 원 으로 지정되었습니다.", 5, 50, 5);
-                                                                p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2.0f, 1.0f);
-                                                            }
-                                                        }
-                                                        catch (NumberFormatException e) {
-                                                            p.sendMessage(header + ChatColor.DARK_RED + "숫자만 입력해주세요..");
-                                                        }
-                                                    }
-                                                }
-                                                else if (arg[2].equalsIgnoreCase("룰렛")) {
-                                                    if (arg.length == 3) {
-                                                        p.sendMessage(header + ChatColor.AQUA + "금액을 입력해주세요. " + ChatColor.RED + "현재금액 " + ChatColor.GRAY + ": " + ChatColor.GOLD + Gamble.rolletmaximum + " 원");
-                                                    }
-                                                    else {
-                                                        try {
-                                                            int a = Integer.parseInt(arg[3]);
-                                                            if (a <= 0) {
-                                                                p.sendMessage(header + ChatColor.RED + "값이 이상합니다..");
-                                                            }
-                                                            else if (a < Gamble.rolletminimum) {
-                                                                p.sendMessage(header + ChatColor.RED + "최소금액 보다 적은값을 입력하셨습니다.");
-                                                            }
-                                                            else {
-                                                                Gamble.rolletmaximum = a;
-                                                                p.sendTitle(header, ChatColor.AQUA + "룰렛" + ChatColor.WHITE + "의 " + ChatColor.RED + "최대 금액" + ChatColor.WHITE + "이 " + ChatColor.GOLD + a + ChatColor.WHITE + " 원 으로 지정되었습니다.", 5, 50, 5);
-                                                                p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2.0f, 1.0f);
-                                                            }
-                                                        }
-                                                        catch (NumberFormatException e) {
-                                                            p.sendMessage(header + ChatColor.DARK_RED + "숫자만 입력해주세요..");
-                                                        }
-                                                    }
-                                                }
-                                                else if (arg[2].equalsIgnoreCase("인디언포커")) {
-                                                    if (arg.length == 3) {
-                                                        p.sendMessage(header + ChatColor.AQUA + "금액을 입력해주세요. " + ChatColor.RED + "현재금액 " + ChatColor.GRAY + ": " + ChatColor.GOLD + Gamble.indiammaximum + " 원");
-                                                    }
-                                                    else {
-                                                        try {
-                                                            int a = Integer.parseInt(arg[3]);
-                                                            if (a <= 0) {
-                                                                p.sendMessage(header + ChatColor.RED + "값이 이상합니다..");
-                                                            }
-                                                            else if (a < Gamble.indianminimum) {
-                                                                p.sendMessage(header + ChatColor.RED + "최소금액 보다 적은값을 입력하셨습니다.");
-                                                            }
-                                                            else {
-                                                                Gamble.indiammaximum = a;
-                                                                p.sendTitle(header, ChatColor.AQUA + "인디언 포커" + ChatColor.WHITE + "의 " + ChatColor.RED + "최대 금액" + ChatColor.WHITE + "이 " + ChatColor.GOLD + a + ChatColor.WHITE + " 원 으로 지정되었습니다.", 5, 50, 5);
-                                                                p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2.0f, 1.0f);
-                                                            }
-                                                        }
-                                                        catch (NumberFormatException e) {
-                                                            p.sendMessage(header + ChatColor.DARK_RED + "숫자만 입력해주세요..");
-                                                        }
-                                                    }
-
-                                                }
-                                                else if (arg[2].equalsIgnoreCase("카드")) {
-                                                    if (arg.length == 3) {
-                                                        p.sendMessage(header + ChatColor.AQUA + "금액을 입력해주세요. " + ChatColor.RED + "현재금액 " + ChatColor.GRAY + ": " + ChatColor.GOLD + Gamble.cardmaximum + " 원");
-                                                    }
-                                                    else {
-                                                        try {
-                                                            int a = Integer.parseInt(arg[3]);
-                                                            if (a <= 0) {
-                                                                p.sendMessage(header + ChatColor.RED + "값이 이상합니다..");
-                                                            }
-                                                            else if (a < Gamble.cardminimum) {
-                                                                p.sendMessage(header + ChatColor.RED + "최소금액 보다 적은값을 입력하셨습니다.");
-                                                            }
-                                                            else {
-                                                                Gamble.cardmaximum = a;
-                                                                p.sendTitle(header, ChatColor.AQUA + "카드 도박" + ChatColor.WHITE + "의 " + ChatColor.RED + "최대 금액" + ChatColor.WHITE + "이 " + ChatColor.GOLD + a + ChatColor.WHITE + " 원 으로 지정되었습니다.", 5, 50, 5);
-                                                                p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2.0f, 1.0f);
-                                                            }
-                                                        }
-                                                        catch (NumberFormatException e) {
-                                                            p.sendMessage(header + ChatColor.DARK_RED + "숫자만 입력해주세요..");
-                                                        }
-                                                    }
-                                                }
-
-                                            }
-                                            else {
-                                                p.sendMessage(header + ChatColor.AQUA + "/도박 금액 <최대/최소> <슬롯머신/주사위/블랙잭/룰렛/동전> <금액>");
-                                            }
-
-                                        }
-                                    }
-                                    else if (arg[1].equalsIgnoreCase("최소")) {
-                                        if (arg.length == 2) {
-                                            p.sendMessage(header + ChatColor.AQUA + "/도박 금액 <최소> <슬롯머신/주사위/블랙잭/룰렛/동전> <금액>");
-                                        }
-                                        else {
-                                            if (arg[2].equalsIgnoreCase("주사위") || arg[2].equalsIgnoreCase("블랙잭") || arg[2].equalsIgnoreCase("슬롯머신") || arg[2].equalsIgnoreCase("룰렛") || arg[2].equalsIgnoreCase("동전") || arg[2].equalsIgnoreCase("인디언포커") || arg[2].equalsIgnoreCase("카드")) {
-                                                if (arg[2].equalsIgnoreCase("슬롯머신")) {
-                                                    if (arg.length == 3) {
-                                                        p.sendMessage(header + ChatColor.AQUA + "금액을 입력해주세요. " + ChatColor.RED + "현재금액 " + ChatColor.GRAY + ": " + ChatColor.GOLD + Gamble.slotneed + " 원");
-                                                    }
-                                                    else {
-                                                        try {
-                                                            int a = Integer.parseInt(arg[3]);
-                                                            if (a <= 0) {
-                                                                p.sendMessage(header + ChatColor.RED + "값이 이상합니다..");
-                                                            }
-                                                            else {
-                                                                Gamble.slotneed = a;
-                                                                p.sendTitle(header, ChatColor.AQUA + "슬롯머신" + ChatColor.WHITE + "의 " + ChatColor.YELLOW + "1회당 금액" + ChatColor.WHITE + "이 " + ChatColor.GOLD + a + ChatColor.WHITE + " 원 으로 지정되었습니다.", 5, 50, 5);
-                                                                p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2.0f, 1.0f);
-                                                            }
-                                                        }
-                                                        catch (NumberFormatException e) {
-                                                            p.sendMessage(header + ChatColor.DARK_RED + "숫자만 입력해주세요..");
-                                                        }
-                                                    }
-                                                }
-                                                else if (arg[2].equalsIgnoreCase("주사위")) {
-                                                    if (arg.length == 3) {
-                                                        p.sendMessage(header + ChatColor.AQUA + "금액을 입력해주세요. " + ChatColor.RED + "현재금액 " + ChatColor.GRAY + ": " + ChatColor.GOLD + Gamble.diceminimum + " 원");
-                                                    }
-                                                    else {
-                                                        try {
-                                                            int a = Integer.parseInt(arg[3]);
-                                                            if (a <= 0) {
-                                                                p.sendMessage(header + ChatColor.RED + "값이 이상합니다..");
-                                                            }
-                                                            else if (a > Gamble.dicemaximum) {
-                                                                p.sendMessage(header + ChatColor.RED + "최대금액 보다 큰 값을 입력하셨습니다.");
-                                                            }
-                                                            else {
-                                                                Gamble.diceminimum = a;
-                                                                p.sendTitle(header, ChatColor.AQUA + "주사위 도박" + ChatColor.WHITE + "의 " + ChatColor.YELLOW + "최소 금액" + ChatColor.WHITE + "이 " + ChatColor.GOLD + a + ChatColor.WHITE + " 원 으로 지정되었습니다.", 5, 50, 5);
-                                                                p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2.0f, 1.0f);
-                                                            }
-                                                        }
-                                                        catch (NumberFormatException e) {
-                                                            p.sendMessage(header + ChatColor.DARK_RED + "숫자만 입력해주세요..");
-                                                        }
-                                                    }
-                                                }
-                                                else if (arg[2].equalsIgnoreCase("룰렛")) {
-                                                    if (arg.length == 3) {
-                                                        p.sendMessage(header + ChatColor.AQUA + "금액을 입력해주세요. " + ChatColor.RED + "현재금액 " + ChatColor.GRAY + ": " + ChatColor.GOLD + Gamble.rolletminimum + " 원");
-                                                    }
-                                                    else {
-                                                        try {
-                                                            int a = Integer.parseInt(arg[3]);
-                                                            if (a <= 0) {
-                                                                p.sendMessage(header + ChatColor.RED + "값이 이상합니다..");
-                                                            }
-                                                            else if (a > Gamble.rolletmaximum) {
-                                                                p.sendMessage(header + ChatColor.RED + "최대금액 보다 큰값을 입력하셨습니다.");
-                                                            }
-                                                            else {
-                                                                Gamble.rolletminimum = a;
-                                                                p.sendTitle(header, ChatColor.AQUA + "룰렛" + ChatColor.WHITE + "의 " + ChatColor.YELLOW + "최소 금액" + ChatColor.WHITE + "이 " + ChatColor.GOLD + a + ChatColor.WHITE + " 원 으로 지정되었습니다.", 5, 50, 5);
-                                                                p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2.0f, 1.0f);
-                                                            }
-                                                        }
-                                                        catch (NumberFormatException e) {
-                                                            p.sendMessage(header + ChatColor.DARK_RED + "숫자만 입력해주세요..");
-                                                        }
-                                                    }
-                                                }
-                                                else if (arg[2].equalsIgnoreCase("동전")) {
-                                                    if (arg.length == 3) {
-                                                        p.sendMessage(header + ChatColor.AQUA + "금액을 입력해주세요. " + ChatColor.RED + "현재금액 " + ChatColor.GRAY + ": " + ChatColor.GOLD + Gamble.coinneed + " 원");
-                                                    }
-                                                    else {
-                                                        try {
-                                                            int a = Integer.parseInt(arg[3]);
-                                                            if (a <= 0) {
-                                                                p.sendMessage(header + ChatColor.RED + "값이 이상합니다..");
-                                                            }
-                                                            else {
-                                                                Gamble.coinneed = a;
-                                                                p.sendTitle(header, ChatColor.AQUA + "동전 도박" + ChatColor.WHITE + "의 " + ChatColor.YELLOW + "1회당 금액" + ChatColor.WHITE + "이 " + ChatColor.GOLD + a + ChatColor.WHITE + " 원 으로 지정되었습니다.", 5, 50, 5);
-                                                                p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2.0f, 1.0f);
-                                                            }
-                                                        }
-                                                        catch (NumberFormatException e) {
-                                                            p.sendMessage(header + ChatColor.DARK_RED + "숫자만 입력해주세요..");
-                                                        }
-                                                    }
-                                                }
-                                                else if (arg[2].equalsIgnoreCase("인디언포커")) {
-                                                    if (arg.length == 3) {
-                                                        p.sendMessage(header + ChatColor.AQUA + "금액을 입력해주세요. " + ChatColor.RED + "현재금액 " + ChatColor.GRAY + ": " + ChatColor.GOLD + Gamble.indianminimum + " 원");
-                                                    }
-                                                    else {
-                                                        try {
-                                                            int a = Integer.parseInt(arg[3]);
-                                                            if (a <= 0) {
-                                                                p.sendMessage(header + ChatColor.RED + "값이 이상합니다..");
-                                                            }
-                                                            else {
-                                                                Gamble.indianminimum = a;
-                                                                p.sendTitle(header, ChatColor.AQUA + "인디언 포커" + ChatColor.WHITE + "의 " + ChatColor.YELLOW + "최소 금액" + ChatColor.WHITE + "이 " + ChatColor.GOLD + a + ChatColor.WHITE + " 원 으로 지정되었습니다.", 5, 50, 5);
-                                                                p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2.0f, 1.0f);
-                                                            }
-                                                        }
-                                                        catch (NumberFormatException e) {
-                                                            p.sendMessage(header + ChatColor.DARK_RED + "숫자만 입력해주세요..");
-                                                        }
-                                                    }
-                                                }
-                                                else if (arg[2].equalsIgnoreCase("카드")) {
-                                                    if (arg.length == 3) {
-                                                        p.sendMessage(header + ChatColor.AQUA + "금액을 입력해주세요. " + ChatColor.RED + "현재금액 " + ChatColor.GRAY + ": " + ChatColor.GOLD + Gamble.cardminimum + " 원");
-                                                    }
-                                                    else {
-                                                        try {
-                                                            int a = Integer.parseInt(arg[3]);
-                                                            if (a <= 0) {
-                                                                p.sendMessage(header + ChatColor.RED + "값이 이상합니다..");
-                                                            }
-                                                            else {
-                                                                Gamble.cardminimum = a;
-                                                                p.sendTitle(header, ChatColor.AQUA + "카드 도박" + ChatColor.WHITE + "의 " + ChatColor.YELLOW + "최소 금액" + ChatColor.WHITE + "이 " + ChatColor.GOLD + a + ChatColor.WHITE + " 원 으로 지정되었습니다.", 5, 50, 5);
-                                                                p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2.0f, 1.0f);
-                                                            }
-                                                        }
-                                                        catch (NumberFormatException e) {
-                                                            p.sendMessage(header + ChatColor.DARK_RED + "숫자만 입력해주세요..");
-                                                        }
-                                                    }
-                                                }
-                                                else {
-                                                    if (arg.length == 3) {
-                                                        p.sendMessage(header + ChatColor.AQUA + "금액을 입력해주세요. " + ChatColor.RED + "현재금액 " + ChatColor.GRAY + ": " + ChatColor.GOLD + Gamble.blackminimum + " 원");
-                                                    }
-                                                    else {
-                                                        try {
-                                                            int a = Integer.parseInt(arg[3]);
-                                                            if (a <= 0) {
-                                                                p.sendMessage(header + ChatColor.RED + "값이 이상합니다..");
-                                                            }
-                                                            else if (a > Gamble.blackmaximum) {
-                                                                p.sendMessage(header + ChatColor.RED + "최대금액 보다 큰값을 입력하셨습니다.");
-                                                            }
-                                                            else {
-                                                                Gamble.blackminimum = a;
-                                                                p.sendTitle(header, ChatColor.AQUA + "블랙잭" + ChatColor.WHITE + "의 " + ChatColor.YELLOW + "최소 금액" + ChatColor.WHITE + "이 " + ChatColor.GOLD + a + ChatColor.WHITE + " 원 으로 지정되었습니다.", 5, 50, 5);
-                                                                p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2.0f, 1.0f);
-                                                            }
-                                                        }
-                                                        catch (NumberFormatException e) {
-                                                            p.sendMessage(header + ChatColor.DARK_RED + "숫자만 입력해주세요..");
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            else {
-                                                p.sendMessage(header + ChatColor.AQUA + "/도박 금액 <최대/최소> <슬롯머신/주사위/블랙잭/룰렛/동전> <금액>");
-                                            }
-                                        }
-                                    }
-                                    else {
-                                        if (arg.length == 2) {
-                                            p.sendMessage(header + ChatColor.AQUA + "금액을 입력해주세요. " + ChatColor.GREEN + "현재 누적 금액 " + ChatColor.GRAY + ": " + ChatColor.GOLD + Gamble.slotaccumoney + " 원");
-                                        }
-                                        else {
-                                            try {
-                                                int a = Integer.parseInt(arg[2]);
-                                                if (a < 1) {
-                                                    p.sendMessage(header + ChatColor.RED + "최소 1원이상으로 설정해야 합니다..");
-                                                }
-                                                else {
-                                                    Gamble.slotaccumoney = a;
-                                                    p.sendTitle(header, ChatColor.AQUA + "슬롯머신" + ChatColor.WHITE + "의 " + ChatColor.DARK_RED + "누적 금액" + ChatColor.WHITE + "이 " + ChatColor.GOLD + a + ChatColor.WHITE + " 원 으로 지정되었습니다.", 5, 50, 5);
-                                                    p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 2.0f, 1.0f);
-                                                }
-                                            }
-                                            catch (NumberFormatException e) {
-                                                p.sendMessage(header + ChatColor.DARK_RED + "숫자만 입력해주세요..");
-                                            }
-                                        }
-                                    }
-                                }
-                                else {
-                                    p.sendMessage(header + ChatColor.AQUA + "/도박 금액 <최대/최소> <슬롯머신/주사위/블랙잭/룰렛/동전> <금액>");
-                                }
-                            }
+                            ConfigManager.getInstance().saveData();
+                            p.sendMessage(header + "§c데이터가 저장 되었습니다.");
                         }
-                        else {
-                            p.sendMessage(header + ChatColor.DARK_RED + "접근권한이 없습니다.");
+                        else
+                            p.sendMessage(header + "§c접근권한이 없습니다.");
+                    }
+                    else if (arg[0].equalsIgnoreCase("리로드")) {
+                        if (p.isOp()) {
+                            ConfigManager.getInstance().loadData();
+                            p.sendMessage(header + "§b데이터가 리로드 되었습니다.");
                         }
-                    }*/
+                        else
+                            p.sendMessage(header + "§c접근권한이 없습니다.");
+                    }
+                }
             }
+            return true;
         }
-        return true;
-    }
         return false;
-}
+    }
 
     public DenyReason checkPlayer(Player p) {
         if (p.getInventory().getItemInMainHand().getType() != Material.AIR || p.getInventory().getItemInOffHand().getType() != Material.AIR)
             return DenyReason.HAND;
         else if (p.isSleeping())
             return DenyReason.SLEEP;
-        /*else if (GameVars.GamePlayers.contains(p.getUniqueId()) || GameVars.WaitPlayers.contains(p.getUniqueId()))
-            return DenyReason.JOIN;*/
         else if (DataManager.getInstance().containBlackList(p.getUniqueId()))
             return DenyReason.BLACK;
         else
@@ -906,7 +686,7 @@ public class GambleCommand implements CommandExecutor {
     }
 
     public boolean checkParameter(String value) {
-        return value.equalsIgnoreCase("슬롯머신") || value.equalsIgnoreCase("주사위") || value.equalsIgnoreCase("블랙잭") || value.equalsIgnoreCase("룰렛") || value.equalsIgnoreCase("인디언포커") || value.equalsIgnoreCase("카드") || value.equalsIgnoreCase("동전") || value.equalsIgnoreCase("블랙리스트") || value.equalsIgnoreCase("저장") || value.equalsIgnoreCase("리로드");
+        return value.equalsIgnoreCase("슬롯머신") || value.equalsIgnoreCase("주사위") || value.equalsIgnoreCase("블랙잭") || value.equalsIgnoreCase("룰렛") || value.equalsIgnoreCase("인디언포커") || value.equalsIgnoreCase("카드") || value.equalsIgnoreCase("동전") || value.equalsIgnoreCase("포커") || value.equalsIgnoreCase("주식") || value.equalsIgnoreCase("블랙리스트") || value.equalsIgnoreCase("저장") || value.equalsIgnoreCase("리로드");
     }
 
     public boolean checkIntParameter(String value) {

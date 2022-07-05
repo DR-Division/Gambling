@@ -4,7 +4,7 @@ import com.division.Gamble;
 import com.division.data.CardData;
 import com.division.data.DataManager;
 import com.division.data.GameData;
-import com.division.data.IndianData;
+import com.division.file.GambleLogger;
 import com.division.game.Game;
 import com.division.util.EconomyAPI;
 import com.division.util.InventoryUtil;
@@ -201,6 +201,7 @@ public class CardGamble implements Game {
                     GameData.getInstance().stopGame(player);
                     GameData.getInstance().stopGame(target);
                     CardData.getInstance().remove(player);
+                    GambleLogger.getInstance().addLog(p.getName() + "님이 " + t.getName() + "와 카드 도박에서 무승부");
                     p.closeInventory();
                     t.closeInventory();
                 }
@@ -211,6 +212,7 @@ public class CardGamble implements Game {
                     GameData.getInstance().stopGame(player);
                     GameData.getInstance().stopGame(target);
                     CardData.getInstance().remove(player);
+                    GambleLogger.getInstance().addLog(p.getName() + "님이 카드도박 승리" + t.getName() + "님이 패배하여 " + MAX_BET * 2 + "원 흭득");
                     p.closeInventory();
                     t.closeInventory();
                 }
@@ -221,6 +223,7 @@ public class CardGamble implements Game {
                     GameData.getInstance().stopGame(player);
                     GameData.getInstance().stopGame(target);
                     CardData.getInstance().remove(player);
+                    GambleLogger.getInstance().addLog(t.getName() + "님이 카드도박 승리" + p.getName() + "님이 패배하여 " + MAX_BET * 2 + "원 흭득");
                     p.closeInventory();
                     t.closeInventory();
                 }

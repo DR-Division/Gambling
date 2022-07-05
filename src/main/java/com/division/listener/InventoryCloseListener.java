@@ -117,5 +117,21 @@ public class InventoryCloseListener implements Listener {
             }
             GameData.getInstance().stopGame(p.getUniqueId());
         }
+        else if (title.contains("포커")) {
+            if (GameData.getInstance().isPlaying(p.getUniqueId())) {
+                Game current = GameData.getInstance().getData(p.getUniqueId()).getCurrent();
+                if (current instanceof Poker) {
+                    Poker poker = (Poker) current;
+                    p.sendTitle(header, "§f포커 도중 GUI창을 닫아 도박이 중단 되었습니다.", 5, 50, 5);
+                    p.playSound(event.getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 3.0f, 1.0f);
+                    poker.quitGame(p.getUniqueId());
+                    GambleLogger.getInstance().addLog(p.getName() + "님이 포커 도중 GUI를 닫음");
+                }
+            }
+            GameData.getInstance().stopGame(p.getUniqueId());
+        }
+        else if (title.contains("주식")) {
+            GameData.getInstance().stopGame(p.getUniqueId());
+        }
     }
 }

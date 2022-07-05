@@ -134,7 +134,7 @@ public class Dice implements Game {
                             else {
                                 GameData.getInstance().stopGame(target);
                                 p.closeInventory();
-                                p.sendTitle(header, ChatColor.RED + "게임에서 패배 하셨습니다..ㅜㅜ", 5, 50, 5);
+                                p.sendTitle(header, "§c게임에서 패배 하셨습니다..ㅜㅜ", 5, 50, 5);
                             }
                             break;
                         case MID:
@@ -157,7 +157,7 @@ public class Dice implements Game {
                             else {
                                 GameData.getInstance().stopGame(target);
                                 p.closeInventory();
-                                p.sendTitle(header, ChatColor.RED + "게임에서 패배 하셨습니다..ㅜㅜ", 5, 50, 5);
+                                p.sendTitle(header, "§c게임에서 패배 하셨습니다..ㅜㅜ", 5, 50, 5);
                             }
                             break;
                         case HIGH:
@@ -180,7 +180,7 @@ public class Dice implements Game {
                             else {
                                 GameData.getInstance().stopGame(target);
                                 p.closeInventory();
-                                p.sendTitle(header, ChatColor.RED + "게임에서 패배 하셨습니다..ㅜㅜ", 5, 50, 5);
+                                p.sendTitle(header, "§c게임에서 패배 하셨습니다..ㅜㅜ", 5, 50, 5);
                             }
                             break;
                     }

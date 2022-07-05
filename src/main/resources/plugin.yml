@@ -1,5 +1,5 @@
 name: Gamble
-version: 2.5
+version: 2.6
 author: DR_Division
 main: com.division.Gamble
 commands:

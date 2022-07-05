@@ -19,6 +19,8 @@ public class DataManager {
     private int indianMax;
     private int cardMin;
     private int cardMax;
+    private int pokerMin;
+    private int pokerMax;
     private String header;
     private ArrayList<UUID> blacklist;
 
@@ -40,6 +42,8 @@ public class DataManager {
         indianMax = 0;
         cardMin = 0;
         cardMax = 0;
+        pokerMin = 0;
+        pokerMax = 0;
         blacklist = new ArrayList<>();
         header = "§6[ §f! §6] ";
     }
@@ -150,6 +154,22 @@ public class DataManager {
 
     public void setCardMax(int cardMax) {
         this.cardMax = cardMax;
+    }
+
+    public int getPokerMin() {
+        return pokerMin;
+    }
+
+    public void setPokerMin(int pokerMin) {
+        this.pokerMin = pokerMin;
+    }
+
+    public int getPokerMax() {
+        return pokerMax;
+    }
+
+    public void setPokerMax(int pokerMax) {
+        this.pokerMax = pokerMax;
     }
 
     public void addBlackList(UUID data) {

@@ -67,15 +67,19 @@ public class SlotMachine implements Game {
     public void check(int a, int b, int c) {
         Player p = Bukkit.getPlayer(target);
         if (a == b && b == c) {
-            String result = String.format("%.2f", DataManager.getInstance().getSlotCount() * 7 / 10);
+            double result = Double.parseDouble(String.format("%.2f", DataManager.getInstance().getSlotCount() * 7 / 10));
+            double last = Math.round((DataManager.getInstance().getSlotCount() - result) * 100) / 100.0;
+            double give = Math.round((result - result * (int)(result / 5000) * 0.05) * 100) / 100.0;
+            if (give <= 0)
+                give = 0;
             GameData.getInstance().stopGame(target);
             p.closeInventory();
             Bukkit.getServer().broadcastMessage(" ");
-            Bukkit.getServer().broadcastMessage(header + "§b" + p.getName() + "§f님이 §6잭팟§f을 터트렸습니다!!! §e흭득 금액 §7: §6" + result + "§f원");
+            Bukkit.getServer().broadcastMessage(header + "§b" + p.getName() + "§f님이 §6잭팟§f을 터트렸습니다!!! §e흭득 금액 §7: §6" + give + "§f원");
             Bukkit.getServer().broadcastMessage(" ");
-            GambleLogger.getInstance().addLog(p.getName() + "님이 잭팟으로 " + result + "원 흭득");
-            EconomyAPI.getInstance().giveMoney(p, Float.parseFloat(result));
-            DataManager.getInstance().setSlotCount(DataManager.getInstance().getSlotCount() * 3 / 10);
+            GambleLogger.getInstance().addLog(p.getName() + "님이 잭팟으로 " + give + "원 흭득");
+            EconomyAPI.getInstance().giveMoney(p, give);
+            DataManager.getInstance().setSlotCount(last);
         }
         else {
             p.sendTitle(header,  "§b아쉽게도 잭팟이 터지지 않았습니다.", 5, 50, 5);

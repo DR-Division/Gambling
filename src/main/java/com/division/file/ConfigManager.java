@@ -2,6 +2,8 @@ package com.division.file;
 
 import com.division.Gamble;
 import com.division.data.DataManager;
+import com.division.data.StockData;
+import com.division.data.StockManager;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -10,7 +12,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class ConfigManager {
@@ -70,6 +71,9 @@ public class ConfigManager {
         manager.setIndianMax(config.getInt("indian.max", 4000));
         manager.setCardMin(config.getInt("card.min", 1000));
         manager.setCardMax(config.getInt("card.max", 4000));
+        manager.setPokerMin(config.getInt("poker.min", 1000));
+        manager.setPokerMax(config.getInt("poker.max", 4000));
+        manager.getBlacklist().clear();
         config.getStringList("blacklist").forEach(value -> {
             try {
                 manager.addBlackList(UUID.fromString(value));
@@ -78,10 +82,18 @@ public class ConfigManager {
                 Plugin.getLogger().info("error add data to blacklist : " + value);
             }
         });
+        StockManager.getInstance().setRefreshRate(config.getInt("stock-refresh", 1800));
+        StockManager.getInstance().getStockMap().clear();
+        if (config.getConfigurationSection("stock") != null) {
+            for (String key : config.getConfigurationSection("stock").getKeys(false))
+                StockManager.getInstance().addStock(key, config.getInt("stock." + key + ".initial", 500), config.getInt("stock." + key + ".width", 100), config.getInt("stock." + key + ".current", 500), config.getBoolean("stock." + key + ".warning", false));
+        }
+        StockManager.getInstance().startTask();
     }
 
     public void saveData() {
         DataManager manager = DataManager.getInstance();
+        ArrayList<String> arr = new ArrayList<>();
         config.set("slot.min", manager.getSlotMin());
         config.set("slot.count", manager.getSlotCount());
         config.set("dice.min", manager.getDiceMin());
@@ -95,8 +107,23 @@ public class ConfigManager {
         config.set("indian.max", manager.getIndianMax());
         config.set("card.min", manager.getCardMin());
         config.set("card.max", manager.getCardMax());
-        if (manager.getBlacklist().size() != 0)
-            config.set("blacklist", manager.getBlacklist());
+        config.set("poker.min", manager.getPokerMin());
+        config.set("poker.max", manager.getPokerMax());
+        if (manager.getBlacklist().size() != 0) {
+            manager.getBlacklist().forEach(data -> arr.add(data.toString()));
+            config.set("blacklist", arr);
+        }
+        else
+            config.set("blacklist", new ArrayList<>());
+        config.set("stock-refresh", StockManager.getInstance().getRefreshRate());
+        config.set("stock", null);
+        for (String key : StockManager.getInstance().getStockMap().keySet()) {
+            StockData data = StockManager.getInstance().getStock(key);
+            config.set("stock." + key + ".initial", data.getInitial());
+            config.set("stock." + key + ".width", data.getWidth());
+            config.set("stock." + key + ".current", data.getCurrent());
+            config.set("stock." + key + ".warning", data.isWarning());
+        }
         save();
     }
 

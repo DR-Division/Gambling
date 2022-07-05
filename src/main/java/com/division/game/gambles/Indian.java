@@ -283,7 +283,7 @@ public class Indian implements Game {
                     t.sendTitle(header, "§f승리! 총 베팅한 금액을 받습니다!", 5, 50, 5);
                     p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BELL, 3.0f, 1.0f);
                     t.playSound(t.getLocation(), Sound.ENTITY_CHICKEN_EGG, 3.0f, 1.0f);
-                    EconomyAPI.getInstance().giveMoney(p, playerBet + targetBet);
+                    EconomyAPI.getInstance().giveMoney(t, playerBet + targetBet);
                     GambleLogger.getInstance().addLog(t.getName() + "님이 인디언 포커에서 승리하여 " + (playerBet + targetBet) + "원 흭득");
                 }
             }
